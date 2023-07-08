@@ -1,0 +1,3 @@
+include ':floo-rtc-android'
+include ':app'
+rootProject.name = "floo-rtc-android"
