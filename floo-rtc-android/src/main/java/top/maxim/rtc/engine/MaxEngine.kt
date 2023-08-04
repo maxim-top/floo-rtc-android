@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import im.floo.floolib.*
 import org.webrtc.*
+import top.maxim.rtc.view.BMXRtcRenderView
 import top.maxim.rtc.view.CoreRTCRenterView
 import top.maxim.rtc.webrtc.RTCParametersStrategy
 import top.maxim.rtc.webrtc.WebRtcClient
@@ -488,8 +489,8 @@ class MaxEngine(mBMXClient: BMXClient) : BMXRTCEngine() {
 
     override fun startPreview(canvas: BMXVideoCanvas?): BMXErrorCode {
         if (canvas != null) {
-            val view = canvas.mView as CoreRTCRenterView
-            mClient?.startLocalPreView(view, canvas.mStream.mEnableVideo)
+            val view = canvas.mView as BMXRtcRenderView
+            mClient?.startLocalPreView(view.obtainView as CoreRTCRenterView, canvas.mStream.mEnableVideo)
         }
         return BMXErrorCode.NoError;
     }
@@ -501,7 +502,8 @@ class MaxEngine(mBMXClient: BMXClient) : BMXRTCEngine() {
 
     override fun startRemoteView(canvas: BMXVideoCanvas): BMXErrorCode {
         mClient?.setRemote(canvas.mUserId.toString()) { videoTrack, audioTrack ->
-            mClient?.startRemotePreView(canvas.mView as CoreRTCRenterView, canvas.mStream.mEnableVideo, audioTrack, videoTrack)
+            val view = canvas.mView as BMXRtcRenderView
+            mClient?.startRemotePreView(view.obtainView as CoreRTCRenterView, canvas.mStream.mEnableVideo, audioTrack, videoTrack)
         }
         return BMXErrorCode.NoError;
     }
