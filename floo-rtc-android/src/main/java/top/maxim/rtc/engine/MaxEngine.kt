@@ -281,6 +281,7 @@ class MaxEngine(mBMXClient: BMXClient) : BMXRTCEngine() {
                     return
                 }
                 mService.detachSession(session, BMXRTCSignalService.HandlerType.publishType)
+                onLeaveRoomCallback("", roomId, error, reason)
             }
 
             override fun onSubscribeWebrtcUp(session: BMXRTCSession?, senderId: Long) {
@@ -590,6 +591,14 @@ class MaxEngine(mBMXClient: BMXClient) : BMXRTCEngine() {
         Thread {
             mEngineListeners.forEach {
                 it.onLocalPublish(stream, info, if(code == 0) BMXErrorCode.NoError else BMXErrorCode.NotFound)
+            }
+        }.start()
+    }
+
+    fun onLeaveRoomCallback(info: String?, roomId: Long, code: Int, reason: String?) {
+        Thread {
+            mEngineListeners.forEach {
+                it.onLeaveRoom(info, roomId, if(code == 0) BMXErrorCode.NoError else BMXErrorCode.NotFound, reason)
             }
         }.start()
     }

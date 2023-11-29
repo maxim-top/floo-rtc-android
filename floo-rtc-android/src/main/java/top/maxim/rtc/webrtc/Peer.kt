@@ -1,6 +1,19 @@
 package top.maxim.rtc.webrtc
 
-import org.webrtc.*
+import org.webrtc.AudioTrack
+import org.webrtc.DataChannel
+import org.webrtc.IceCandidate
+import org.webrtc.MediaConstraints
+import org.webrtc.MediaStream
+import org.webrtc.MediaStreamTrack
+import org.webrtc.PeerConnection
+import org.webrtc.PeerConnectionFactory
+import org.webrtc.RtpReceiver
+import org.webrtc.RtpSender
+import org.webrtc.RtpTransceiver
+import org.webrtc.SdpObserver
+import org.webrtc.SessionDescription
+import org.webrtc.VideoTrack
 
 /**
  * Description : PeerConnection通道封装，包括PeerConnection创建及状态回调
@@ -18,6 +31,7 @@ class Peer(factory: PeerConnectionFactory, rtcConfig: PeerConnection.RTCConfigur
     private var mAnswerCreate : ((sdp : SessionDescription) -> Unit)? = null
     private var mVideoTrack : VideoTrack? = null
     private var mAudioTrack : AudioTrack? = null
+    private var mTracks = mutableListOf<RtpSender?>()
 
     init {
         mPeerConnection = factory.createPeerConnection(rtcConfig, this)
@@ -58,6 +72,14 @@ class Peer(factory: PeerConnectionFactory, rtcConfig: PeerConnection.RTCConfigur
         remoteAdd(mVideoTrack, mAudioTrack)
     }
 
+    fun removeTracks(){
+        for (track in mTracks){
+            mPeerConnection?.removeTrack(track)
+        }
+    }
+    fun addTrack(track: MediaStreamTrack?){
+        mTracks.add(mPeerConnection?.addTrack(track))
+    }
     /**SdpObserver是来回调sdp是否创建(offer,answer)成功，是否设置描述成功(local,remote）的接口**/
     override fun onCreateSuccess(sdp: SessionDescription) {
         mPeerConnection?.setLocalDescription(this, sdp)

@@ -180,6 +180,7 @@ class WebRtcClient {
     //取消本地video
     fun stopLocalPreView() {
         mTrack.stopCapture()
+        myPeer?.removeTracks()
     }
 
     //关联远端video
@@ -196,11 +197,11 @@ class WebRtcClient {
         myPeer = Peer(mPeerFactory, mPeerConfig)
         if (video) {
             val videoTrack = mTrack.createLocalVideoTrack(mEglBase, mStrategy.videoWidth, mStrategy.videoHeight, mStrategy.videoFps)
-            myPeer?.mPeerConnection?.addTrack(videoTrack)
+            myPeer?.addTrack(videoTrack)
         }
         if (audio) {
             val audioTrack = mTrack.createLocalAudioTrack()
-            myPeer?.mPeerConnection?.addTrack(audioTrack)
+            myPeer?.addTrack(audioTrack)
         }
         myPeer?.createOffer(mSdpConstraints, roomId, success)
     }
